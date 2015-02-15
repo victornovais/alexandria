@@ -4,8 +4,14 @@ from rest_framework import serializers
 from acervo.models import Livro, Exemplar
 
 
+class ExemplarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Exemplar
+        fields = ('numero',)
+
+
 class LivroSerializer(serializers.HyperlinkedModelSerializer):
-    exemplares = serializers.PrimaryKeyRelatedField(many=True, queryset=Exemplar.objects.all())
+    exemplares = ExemplarSerializer(many=True, read_only=True)
 
     class Meta:
         model = Livro
