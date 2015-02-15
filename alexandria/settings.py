@@ -38,7 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     # Minhas apps
-    'livro',
+    'acervo',
 
     # Externas
     'rest_framework',
