@@ -9,6 +9,18 @@ class Livro(models.Model):
     def __unicode__(self):
         return self.nome
 
+    def adicionar_exemplar(self):
+        if self.exemplares.exists():
+            ultimo_exemplar = self.exemplares.latest('id')
+            numero = ultimo_exemplar.numero + 1
+        else:
+            numero = 1
+
+        exemplar = Exemplar(numero=numero)
+        self.exemplares.add(exemplar)
+
+        return exemplar
+
     class Meta:
         db_table = 'livro'
 
