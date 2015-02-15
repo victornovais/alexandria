@@ -1,12 +1,7 @@
-from rest_framework import serializers, viewsets
+from rest_framework import viewsets
 
 from acervo.models import Livro
-
-
-class LivroSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Livro
-        fields = ('url', 'isbn', 'nome', 'editora',)
+from acervo.serializers import LivroSerializer
 
 
 class LivroViewSet(viewsets.ModelViewSet):
