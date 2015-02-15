@@ -14,4 +14,5 @@ class Livro(models.Model):
 
 
 class Exemplar(models.Model):
-    livro = models.ForeignKey('Livro')
+    livro = models.ForeignKey('Livro', related_name='exemplares')
+    numero = models.IntegerField('Numero', default=1)
