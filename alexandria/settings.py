@@ -42,6 +42,7 @@ INSTALLED_APPS = (
 
     # Externas
     'rest_framework',
+    'rest_framework.authtoken',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -90,4 +91,7 @@ STATIC_URL = '/static/'
 
 # REST FRAMEWORK settings
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    )
 }
