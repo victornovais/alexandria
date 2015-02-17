@@ -2,12 +2,14 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework import routers
 
-from acervo.views import LivroViewSet
-from usuario.views import ObterAlexandriaToken
+from acervo.views import EmprestimoViewSet
+
+from usuario.views import ObterAlexandriaToken, UsuarioViewSet
 
 
 router = routers.DefaultRouter()
-router.register(r'livros', LivroViewSet)
+router.register(r'usuarios', UsuarioViewSet)
+router.register(r'emprestimos', EmprestimoViewSet)
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
