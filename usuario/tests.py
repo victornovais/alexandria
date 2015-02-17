@@ -10,7 +10,7 @@ class UsuarioTest(APITestCase):
         self.usuario = mommy.make(Usuario, cpf='123456789', nome='Trollzinho do LOL')
         self.token = self.usuario.auth_token.key
 
-    def test_nao_concede_acesso_a_usuario_nao_cadastrado(self):
+    def test_nao_concede_token_de_acesso_a_usuario_nao_cadastrado(self):
         data = {'cpf': 'invalido'}
         response = self.client.post(reverse('login'), data)
 
@@ -20,7 +20,7 @@ class UsuarioTest(APITestCase):
     # def test_nao_concede_acesso_a_usuario_em_divida_na_biblioteca(self):
     #     self.fail()
 
-    def test_concede_acesso_a_usuario_cadastrado(self):
+    def test_concede_token_de_acesso_a_usuario_cadastrado(self):
         data = {'cpf': '123456789'}
         response = self.client.post(reverse('login'), data)
 

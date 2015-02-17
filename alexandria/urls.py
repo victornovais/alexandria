@@ -13,7 +13,7 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
 
     # Minhas API's
-    url(r'^login/', ObterAlexandriaToken.as_view()),
+    url(r'^login/', ObterAlexandriaToken.as_view(), name='login'),
     url(r'^', include(router.urls)),
 
     # rest framework browserable API

@@ -1,5 +1,5 @@
 # coding: utf-8
-from rest_framework import serializers
+from rest_framework import serializers, exceptions
 from django.utils.translation import ugettext_lazy as _
 
 from usuario.models import Usuario
@@ -17,6 +17,7 @@ class AlexandriaTokenSerializer(serializers.Serializer):
             # TODO: validar se usuário pode pegar livros
         except Usuario.DoesNotExist:
             msg = _('Usuario inexistente')
+            raise exceptions.ValidationError(msg)
 
         attrs['user'] = usuario
         return attrs
