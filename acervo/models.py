@@ -1,4 +1,7 @@
 from django.db import models
+from djchoices import DjangoChoices, ChoiceItem
+
+from usuario.models import Usuario
 
 
 class Livro(models.Model):
@@ -28,3 +31,21 @@ class Livro(models.Model):
 class Exemplar(models.Model):
     livro = models.ForeignKey('Livro', related_name='exemplares')
     numero = models.IntegerField('Numero', default=1)
+
+
+class Emprestimo(models.Model):
+    # Choices
+    class Status(DjangoChoices):
+        Aberto = ChoiceItem('AB')
+        Fechado = ChoiceItem('FE')
+        Atrasado = ChoiceItem('AT')
+
+
+    # Campos
+    usuario = models.ForeignKey(Usuario, related_name='emprestimos')
+    exemplar = models.ForeignKey(Exemplar)
+
+    data_emprestimo = models.DateField(auto_now_add=True)
+    data_devolucao = models.DateField(null=True)
+
+    status = models.CharField(max_length=2, choices=Status.choices, default=Status.Aberto)
