@@ -2,6 +2,8 @@
 from rest_framework import serializers, exceptions
 from django.utils.translation import ugettext_lazy as _
 
+from acervo.models import Emprestimo
+
 from acervo.serializers import EmprestimoSerializer
 
 from usuario.models import Usuario
@@ -24,8 +26,13 @@ class AlexandriaTokenSerializer(serializers.Serializer):
 
 
 class UsuarioSerializer(serializers.ModelSerializer):
-    emprestimos = EmprestimoSerializer(many=True, read_only=True)
+    emprestimos = serializers.SerializerMethodField()
 
     class Meta:
         model = Usuario
         fields = ('cpf', 'nome', 'emprestimos')
+
+    def get_emprestimos(self, obj):
+        emprestimos_abertos = obj.emprestimos.filter(status=Emprestimo.Status.Aberto)
+        serializer = EmprestimoSerializer(emprestimos_abertos, context=self.context, many=True)
+        return serializer.data

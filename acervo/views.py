@@ -14,4 +14,5 @@ class EmprestimoViewSet(mixins.RetrieveModelMixin,
     queryset = Emprestimo.objects.all()
 
     def get_queryset(self):
-        return super(EmprestimoViewSet, self).get_queryset().filter(usuario=self.request.user)
+        return super(EmprestimoViewSet, self).get_queryset().filter(usuario=self.request.user,
+                                                                    status=Emprestimo.Status.Aberto)
