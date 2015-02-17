@@ -61,7 +61,6 @@ class UsuarioInfoTest(APITestCase):
     #     response = self.client.get(reverse('usuario-detail', kwargs=self.pk_args))
 
     def test_traz_emprestimos_em_aberto_que_o_usuario_possui(self):
-        mommy.make(Emprestimo, 2, usuario=self.usuario, )
         response = self.client.get(reverse('usuario-detail', kwargs=self.pk_args))
 
         self.assertEqual(200, response.status_code)

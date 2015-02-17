@@ -23,5 +23,5 @@ class UsuarioViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = UsuarioSerializer
     queryset = Usuario.objects.all()
 
-    #TODO: garantir que o usuario só acessará o seu objeto
-    # Tentei com get_queryset, mas não ficou legal
+    def get_queryset(self):
+        return super(UsuarioViewSet, self).get_queryset().filter(cpf=self.request.user.cpf)

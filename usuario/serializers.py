@@ -15,8 +15,6 @@ class AlexandriaTokenSerializer(serializers.Serializer):
 
         try:
             usuario = Usuario.objects.get(cpf=cpf)
-
-            # TODO: validar se usuário pode pegar livros
         except Usuario.DoesNotExist:
             msg = _('Usuario inexistente')
             raise exceptions.ValidationError(msg)
