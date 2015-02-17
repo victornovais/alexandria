@@ -39,6 +39,7 @@ INSTALLED_APPS = (
 
     # Minhas apps
     'acervo',
+    'usuario',
 
     # Externas
     'rest_framework',
@@ -89,7 +90,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-AUTH_USER_MODEL = 'usuario.models.Usuario'
+AUTH_USER_MODEL = 'usuario.Usuario'
 
 # REST FRAMEWORK settings
 REST_FRAMEWORK = {

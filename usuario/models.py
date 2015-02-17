@@ -13,6 +13,9 @@ class UsuarioManager(models.Manager):
 
 class Usuario(models.Model):
     cpf = models.IntegerField('Matricula', primary_key=True)
-    nome = models.CharField('Nome', max_length=255)
+    nome = models.CharField('Nome', max_length=255, unique=True)
 
     objects = UsuarioManager()
+
+    REQUIRED_FIELDS = ['cpf']
+    USERNAME_FIELD = 'nome'
