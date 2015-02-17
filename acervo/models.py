@@ -32,6 +32,9 @@ class Exemplar(models.Model):
     livro = models.ForeignKey('Livro', related_name='exemplares')
     numero = models.IntegerField('Numero', default=1)
 
+    class Meta:
+        db_table = 'exemplar'
+
 
 class Emprestimo(models.Model):
     # Choices
@@ -49,3 +52,6 @@ class Emprestimo(models.Model):
     data_devolucao = models.DateField(null=True)
 
     status = models.CharField(max_length=2, choices=Status.choices, default=Status.Aberto)
+
+    class Meta:
+        db_table = 'emprestimo'
