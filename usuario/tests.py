@@ -3,7 +3,6 @@ from model_mommy import mommy
 from rest_framework.test import APITestCase
 
 from acervo.models import Emprestimo, Livro, Exemplar
-
 from usuario.models import Usuario
 
 
@@ -65,6 +64,7 @@ class UsuarioInfoTest(APITestCase):
 
         self.assertEqual(200, response.status_code)
         self.assertEqual(2, len(response.data['emprestimos']))
+        self.assertEqual(3, Emprestimo.objects.count())
 
     def test_usuario_so_tem_acesso_a_seus_registros(self):
         outro_usuario = mommy.make(Usuario, cpf='987654321', nome='Ciclano')
