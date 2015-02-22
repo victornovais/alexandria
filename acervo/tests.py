@@ -23,38 +23,57 @@ class EmprestimoTest(APITestCase):
         livro1 = mommy.make(Livro, isbn=111111, nome='O pequeno principe')
         livro2 = mommy.make(Livro, isbn=222222, nome='Maus')
 
-        self.exemplar = mommy.make(Exemplar, livro=livro1, numero=1)
-        mommy.make(Exemplar, livro=livro2, numero=1)
+        self.exemplar1 = mommy.make(Exemplar, livro=livro1, numero=1)
+        self.exemplar2 = mommy.make(Exemplar, livro=livro2, numero=1)
 
         self.url = reverse('emprestimo-list')
 
     def test_usuario_pede_exemplar_emprestado(self):
-        data = {'exemplar_id': self.exemplar.id}
+        data = {
+            'exemplar': {
+                'id': self.exemplar1.id,
+            }
+        }
         response = self.client.post(self.url, data, format='json')
 
         self.assertEqual(201, response.status_code)
         self.assertEqual(1, Emprestimo.objects.count())
 
     def test_usuario_nao_pode_ter_mais_de_5_emprestimos_em_aberto(self):
-        mommy.make(Emprestimo, 5, exemplar=self.exemplar, usuario=self.usuario, data_emprestimo=datetime.now(),
+        mommy.make(Emprestimo, 5, exemplar=self.exemplar1, usuario=self.usuario, data_emprestimo=datetime.now(),
                    status=Emprestimo.Status.Aberto)
-        data = {}
+
+        data = {
+            'exemplar': {
+                'id': self.exemplar2.id,
+            }
+        }
         response = self.client.post(self.url, data, format='json')
 
         self.assertEqual(400, response.status_code)
         self.assertEqual(5, Emprestimo.objects.count())
 
     def test_usuario_tem_7_dias_para_devolver_exemplar(self):
-        data = {}
+        data = {
+            'exemplar': {
+                'id': self.exemplar1.id,
+            }
+        }
         response = self.client.post(self.url, data, format='json')
 
         self.assertEqual(201, response.status_code)
-        self.assertTrue(response.data['data_devolucao'])
+        emprestimo = Emprestimo.objects.latest('id')
+        diff = emprestimo.data_devolucao - emprestimo.data_emprestimo
+        self.assertEqual(7, diff.days)
 
     def test_usuario_nao_pode_pegar_exemplar_emprestado_se_estiver_em_divida(self):
-        mommy.make(Emprestimo, exemplar=self.exemplar, usuario=self.usuario, data_emprestimo=datetime.now(),
+        mommy.make(Emprestimo, exemplar=self.exemplar1, usuario=self.usuario, data_emprestimo=datetime.now(),
                    status=Emprestimo.Status.Atrasado)
-        data = {}
+        data = {
+            'exemplar': {
+                'id': self.exemplar2.id,
+            }
+        }
         response = self.client.post(self.url, data, format='json')
 
         self.assertEqual(400, response.status_code)

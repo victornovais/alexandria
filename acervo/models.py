@@ -48,8 +48,8 @@ class Emprestimo(models.Model):
     usuario = models.ForeignKey(Usuario, related_name='emprestimos')
     exemplar = models.ForeignKey(Exemplar)
 
-    data_emprestimo = models.DateField(auto_now_add=True)
-    data_devolucao = models.DateField(null=True)
+    data_emprestimo = models.DateTimeField(auto_now_add=True)
+    data_devolucao = models.DateTimeField(null=True)
 
     status = models.CharField(max_length=2, choices=Status.choices, default=Status.Aberto)
 
