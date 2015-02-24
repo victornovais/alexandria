@@ -56,10 +56,7 @@ class UsuarioInfoTest(APITestCase):
         self.assertEqual(self.nome, response.data['nome'])
         self.assertEqual(self.cpf, response.data['cpf'])
 
-    # def test_exibe_status_do_usuario_na_biblioteca(self):
-    #     response = self.client.get(reverse('usuario-detail', kwargs=self.pk_args))
-
-    def test_traz_emprestimos_em_aberto_que_o_usuario_possui(self):
+    def test_traz_emprestimos_que_o_usuario_possui(self):
         response = self.client.get(reverse('usuario-detail', kwargs=self.pk_args))
 
         self.assertEqual(200, response.status_code)
