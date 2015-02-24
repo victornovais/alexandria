@@ -44,7 +44,7 @@ class EmprestimoSerializer(serializers.ModelSerializer):
         except Exemplar.DoesNotExist:
             raise serializers.ValidationError("Exemplar inexistente")
 
-        if exemplar.emprestimo_set.exclude(status=Emprestimo.Status.Fechado).exists():
+        if not exemplar.disponivel_para_emprestimo():
             raise serializers.ValidationError(u"Esse exemplar não está disponível para impréstimo")
         else:
             now = datetime.now()

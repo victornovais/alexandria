@@ -79,3 +79,5 @@ class EmprestimoTest(APITestCase):
         self.assertEqual(400, response.status_code)
         self.assertEqual(1, Emprestimo.objects.filter(status=Emprestimo.Status.Atrasado).count())
         self.assertEqual(0, Emprestimo.objects.filter(status=Emprestimo.Status.Aberto).count())
+
+

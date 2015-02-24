@@ -33,6 +33,9 @@ class Exemplar(models.Model):
     class Meta:
         db_table = 'exemplar'
 
+    def disponivel_para_emprestimo(self):
+        return not self.emprestimo_set.exclude(status=Emprestimo.Status.Fechado).exists()
+
 
 class Emprestimo(models.Model):
     # Choices
