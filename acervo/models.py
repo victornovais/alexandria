@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import models
 from djchoices import DjangoChoices, ChoiceItem
 
@@ -37,6 +38,14 @@ class Exemplar(models.Model):
         return not self.emprestimo_set.exclude(status=Emprestimo.Status.Fechado).exists()
 
 
+class EmprestimoManager(models.Manager):
+    def marcar_emprestimos_em_atraso(self):
+        now = datetime.now()
+
+        return self.filter(status=Emprestimo.Status.Aberto, data_devolucao__lt=now).\
+            update(status=Emprestimo.Status.Atrasado)
+
+
 class Emprestimo(models.Model):
     # Choices
     class Status(DjangoChoices):
@@ -53,6 +62,8 @@ class Emprestimo(models.Model):
     data_devolucao = models.DateTimeField(null=True)
 
     status = models.CharField(max_length=2, choices=Status.choices, default=Status.Aberto)
+
+    objects = EmprestimoManager()
 
     class Meta:
         db_table = 'emprestimo'

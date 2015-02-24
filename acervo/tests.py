@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+from django.core.management import call_command
 
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
@@ -81,3 +82,26 @@ class EmprestimoTest(APITestCase):
         self.assertEqual(0, Emprestimo.objects.filter(status=Emprestimo.Status.Aberto).count())
 
 
+class EmprestimoAtrasadoTest(APITestCase):
+    def setUp(self):
+        self.nome = 'Fulano'
+        self.cpf = '123456789'
+        self.usuario = mommy.make(Usuario, cpf=self.cpf, nome=self.nome)
+
+        livro1 = mommy.make(Livro, isbn=111111, nome='O pequeno principe')
+        exemplar1 = mommy.make(Exemplar, livro=livro1, numero=1)
+
+        now = datetime.now()
+        semana_passada = now - timedelta(7)
+        ontem = now - timedelta(1)
+        mommy.make(Emprestimo, 3, exemplar=exemplar1, usuario=self.usuario, data_emprestimo=semana_passada,
+                   data_devolucao=ontem, status=Emprestimo.Status.Aberto)
+
+        mommy.make(Emprestimo, 3, exemplar=exemplar1, usuario=self.usuario, data_emprestimo=semana_passada,
+                   data_devolucao=ontem, status=Emprestimo.Status.Fechado)
+
+    def test_marca_emprestimos_em_atraso(self):
+        call_command('marcar_emprestimos_atrasados')
+
+        self.assertEqual(3, len(Emprestimo.objects.filter(status=Emprestimo.Status.Atrasado)))
+        self.assertEqual(3, len(Emprestimo.objects.filter(status=Emprestimo.Status.Fechado)))
