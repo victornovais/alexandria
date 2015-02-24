@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.db import models
 from djchoices import DjangoChoices, ChoiceItem
 
@@ -64,6 +64,10 @@ class Emprestimo(models.Model):
     status = models.CharField(max_length=2, choices=Status.choices, default=Status.Aberto)
 
     objects = EmprestimoManager()
+
+    def renovar(self):
+        self.data_devolucao = datetime.now() + timedelta(8)
+        self.save(update_fields=['data_devolucao'])
 
     class Meta:
         db_table = 'emprestimo'

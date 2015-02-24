@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from django.core.management import call_command
 
 from django.core.urlresolvers import reverse
+from django.utils import timezone
 from model_mommy import mommy
 from rest_framework.test import APITestCase
 
@@ -95,7 +96,18 @@ class EmprestimoTest(APITestCase):
         self.assertEqual(1, len(Emprestimo.objects.filter(status=Emprestimo.Status.Fechado)))
 
     def test_usuario_renova_emprestimo(self):
-        self.fail()
+        now = timezone.now()
+        amanha = now + timedelta(1)
+        mommy.make(Emprestimo, id=1, exemplar=self.exemplar1, usuario=self.usuario, data_emprestimo=now,
+                                data_devolucao=amanha, status=Emprestimo.Status.Aberto)
+
+        data = {}
+        response = self.client.put(self.detail_url + 'renovar/', data, format='json')
+
+        self.assertEqual(200, response.status_code)
+        emprestimo = Emprestimo.objects.latest('id')
+        self.assertEqual(Emprestimo.Status.Aberto, emprestimo.status)
+        self.assertGreater(emprestimo.data_devolucao, amanha)
 
     def test_usuario_nao_pode_fechar_emprestimo_se_estiver_em_divida(self):
         mommy.make(Emprestimo, id=1, exemplar=self.exemplar1, usuario=self.usuario, data_emprestimo=datetime.now(),
