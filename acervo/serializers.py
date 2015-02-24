@@ -21,7 +21,7 @@ class ExemplarSerializer(serializers.ModelSerializer):
 
 
 class EmprestimoSerializer(serializers.ModelSerializer):
-    exemplar = ExemplarSerializer()
+    exemplar = ExemplarSerializer(read_only=True)
 
     class Meta:
         model = Emprestimo

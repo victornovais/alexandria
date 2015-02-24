@@ -27,7 +27,8 @@ class EmprestimoTest(APITestCase):
         self.exemplar1 = mommy.make(Exemplar, livro=livro1, numero=1)
         self.exemplar2 = mommy.make(Exemplar, livro=livro2, numero=1)
 
-        self.url = reverse('emprestimo-list')
+        self.list_url = reverse('emprestimo-list')
+        self.detail_url = reverse('emprestimo-detail', kwargs={'pk': 1})
 
     def test_usuario_pede_exemplar_emprestado(self):
         data = {
@@ -35,7 +36,7 @@ class EmprestimoTest(APITestCase):
                 'id': self.exemplar1.id,
             }
         }
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.list_url, data, format='json')
 
         self.assertEqual(201, response.status_code)
         self.assertEqual(1, Emprestimo.objects.count())
@@ -49,7 +50,7 @@ class EmprestimoTest(APITestCase):
                 'id': self.exemplar2.id,
             }
         }
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.list_url, data, format='json')
 
         self.assertEqual(400, response.status_code)
         self.assertEqual(5, Emprestimo.objects.count())
@@ -60,7 +61,7 @@ class EmprestimoTest(APITestCase):
                 'id': self.exemplar1.id,
             }
         }
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.list_url, data, format='json')
 
         self.assertEqual(201, response.status_code)
         emprestimo = Emprestimo.objects.latest('id')
@@ -75,11 +76,39 @@ class EmprestimoTest(APITestCase):
                 'id': self.exemplar2.id,
             }
         }
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.list_url, data, format='json')
 
         self.assertEqual(400, response.status_code)
         self.assertEqual(1, Emprestimo.objects.filter(status=Emprestimo.Status.Atrasado).count())
         self.assertEqual(0, Emprestimo.objects.filter(status=Emprestimo.Status.Aberto).count())
+
+    def test_usuario_fecha_emprestimo(self):
+        mommy.make(Emprestimo, id=1, exemplar=self.exemplar1, usuario=self.usuario, data_emprestimo=datetime.now(),
+                   status=Emprestimo.Status.Aberto)
+
+        data = {
+            'status': 'FE'
+        }
+        self.client.put(self.detail_url, data, format='json')
+
+        self.assertEqual(0, len(Emprestimo.objects.filter(status=Emprestimo.Status.Aberto)))
+        self.assertEqual(1, len(Emprestimo.objects.filter(status=Emprestimo.Status.Fechado)))
+
+    def test_usuario_renova_emprestimo(self):
+        self.fail()
+
+    def test_usuario_nao_pode_fechar_emprestimo_se_estiver_em_divida(self):
+        mommy.make(Emprestimo, id=1, exemplar=self.exemplar1, usuario=self.usuario, data_emprestimo=datetime.now(),
+                   status=Emprestimo.Status.Atrasado)
+
+        data = {
+            'status': 'FE'
+        }
+        response = self.client.put(self.detail_url, data, format='json')
+
+        self.assertEqual(400, response.status_code)
+        self.assertEqual(0, len(Emprestimo.objects.filter(status=Emprestimo.Status.Fechado)))
+        self.assertEqual(1, len(Emprestimo.objects.filter(status=Emprestimo.Status.Atrasado)))
 
 
 class EmprestimoAtrasadoTest(APITestCase):
