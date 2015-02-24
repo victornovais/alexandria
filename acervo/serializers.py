@@ -27,6 +27,17 @@ class EmprestimoSerializer(serializers.ModelSerializer):
         model = Emprestimo
         fields = ('url', 'status', 'data_emprestimo', 'data_devolucao', 'exemplar',)
 
+    def validate(self, attrs):
+        user = self.context['request'].user
+
+        if user.possui_emprestimos_em_atraso():
+            raise serializers.ValidationError(u'O usuário possui empréstimos em atraso')
+
+        if user.excedeu_quantidade_emprestimos():
+            raise serializers.ValidationError(u'O usuário excedeu número de empréstimos em aberto')
+
+        return attrs
+
     def create(self, validated_data):
         try:
             exemplar = Exemplar.objects.get(id=self.initial_data['exemplar']['id'])

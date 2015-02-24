@@ -4,6 +4,9 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
+from acervo.models import Emprestimo
+
+EMPRESTIMOS_POR_USUARIO = 5
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
@@ -20,3 +23,9 @@ class Usuario(models.Model):
     is_active = models.BooleanField(default=True)
     REQUIRED_FIELDS = ['cpf']
     USERNAME_FIELD = 'nome'
+
+    def excedeu_quantidade_emprestimos(self):
+        return self.emprestimos.filter(status=Emprestimo.Status.Aberto).count() >= EMPRESTIMOS_POR_USUARIO
+
+    def possui_emprestimos_em_atraso(self):
+        return self.emprestimos.filter(status=Emprestimo.Status.Atrasado).exists()

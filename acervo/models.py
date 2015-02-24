@@ -1,8 +1,6 @@
 from django.db import models
 from djchoices import DjangoChoices, ChoiceItem
 
-from usuario.models import Usuario
-
 
 class Livro(models.Model):
     isbn = models.IntegerField('ISBN', primary_key=True)
@@ -45,7 +43,7 @@ class Emprestimo(models.Model):
 
 
     # Campos
-    usuario = models.ForeignKey(Usuario, related_name='emprestimos')
+    usuario = models.ForeignKey('usuario.Usuario', related_name='emprestimos')
     exemplar = models.ForeignKey(Exemplar)
 
     data_emprestimo = models.DateTimeField(auto_now_add=True)
@@ -55,3 +53,4 @@ class Emprestimo(models.Model):
 
     class Meta:
         db_table = 'emprestimo'
+        app_label = 'acervo'
